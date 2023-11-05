@@ -31,13 +31,13 @@ switch (cipherId)
             switch (operationId)
             {
                 case 0:
-                    Console.WriteLine(CaesarCipher.Encrypt(text, key));
+                    Console.WriteLine(ShiftCipher.Encrypt(text, key));
                     break;
                 case 1:
-                    Console.WriteLine(CaesarCipher.Decrypt(text, key));
+                    Console.WriteLine(ShiftCipher.Decrypt(text, key));
                     break;
                 case 2:
-                    foreach (var possibleSolution in CaesarCipher.BruteForceHackDecrypt(text))
+                    foreach (var possibleSolution in ShiftCipher.BruteForceHackDecrypt(text))
                     {
                         Console.WriteLine($"Key = {possibleSolution.key}, Text = {possibleSolution}");
                         Console.WriteLine();

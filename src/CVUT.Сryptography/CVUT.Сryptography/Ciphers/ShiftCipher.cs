@@ -3,7 +3,10 @@
 
 namespace CVUT.Сryptography.Ciphers;
 
-public static class CaesarCipher
+/// <summary>
+/// ShiftCipher with key = 3 is Caesar cipher
+/// </summary>
+public static class ShiftCipher
 {
     public static string Encrypt(string text, int key)
     {
