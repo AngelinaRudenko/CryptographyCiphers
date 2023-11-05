@@ -4,7 +4,7 @@ internal class Alphabet
 {
     static Alphabet()
     {
-        NumberToLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLowerInvariant().ToCharArray();
+        NumberToLetter = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
         LetterToNumber = new Dictionary<char, int>();
         for (var i = 0; i < NumberToLetter.Length; i++)

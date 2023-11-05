@@ -68,20 +68,29 @@ public static class ShiftCipher
         return result.ToString();
     }
 
-    public static IEnumerable<(int key, string text)> BruteForceDecrypt(string text)
+    public static async Task BruteForceDecrypt(string text, string outputFilePath)
     {
         if (string.IsNullOrEmpty(text))
         {
-            yield return (-1, string.Empty);
-            yield break;
+            throw new ArgumentException("Text to decrypt is null or empty", nameof(text));
         }
 
         text = text.ToLowerInvariant();
 
+        var result = new List<(int key, string text)>();
+
         // let's assume that user is not silly and skip key = 0
         for (var key = 1; key < Alphabet.NumberToLetter.Length + 1; key++)
         {
-            yield return (key, Decrypt(text, key));
+            result.Add(new ValueTuple<int, string>(key, Decrypt(text, key)));
         }
+
+        var stringResult = new StringBuilder("####### Simple shift #######");
+        foreach (var pair in result)
+        {
+            stringResult.AppendLine($"Key = {pair.key}, Decoded text = '{pair.text}'");
+        }
+
+        await File.WriteAllTextAsync(outputFilePath, stringResult.ToString());
     }
 }
