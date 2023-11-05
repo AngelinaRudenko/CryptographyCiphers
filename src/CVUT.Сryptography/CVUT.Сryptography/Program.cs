@@ -37,7 +37,7 @@ switch (cipherId)
                     Console.WriteLine(ShiftCipher.Decrypt(text, key));
                     break;
                 case 2:
-                    foreach (var possibleSolution in ShiftCipher.BruteForceHackDecrypt(text))
+                    foreach (var possibleSolution in ShiftCipher.BruteForceDecrypt(text))
                     {
                         Console.WriteLine($"Key = {possibleSolution.key}, Text = {possibleSolution}");
                         Console.WriteLine();

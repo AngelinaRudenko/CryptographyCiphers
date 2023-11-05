@@ -68,7 +68,7 @@ public static class ShiftCipher
         return result.ToString();
     }
 
-    public static IEnumerable<(int key, string text)> BruteForceHackDecrypt(string text)
+    public static IEnumerable<(int key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
