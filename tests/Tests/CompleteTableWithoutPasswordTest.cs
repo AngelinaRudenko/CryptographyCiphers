@@ -43,4 +43,16 @@ public class CompleteTableWithoutPasswordTest
 
         Assert.Equal(expected, result);
     }
+
+    [Fact]
+    public void BruteForceDecrypt()
+    {
+        const string text = "HESLO";
+        var result = CompleteTableWithoutPassword.BruteForceDecrypt(text).ToArray();
+
+        Assert.Equal(3, result.Length);
+        Assert.Contains(result, x => x.text.Equals("HLEOS", StringComparison.InvariantCultureIgnoreCase));
+        Assert.Contains(result, x => x.text.Equals("HOESL", StringComparison.InvariantCultureIgnoreCase));
+        Assert.Contains(result, x => x.text.Equals("HSOEL", StringComparison.InvariantCultureIgnoreCase));
+    }
 }

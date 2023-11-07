@@ -59,6 +59,29 @@ public abstract class BaseTranspositionCipher
             }
         }
         return result.ToString();
+    }
 
+    public static string ReadTableByCols(char[,] table, int[] order)
+    {
+        // TODO: add more validations
+        if (table.GetLength(1) != order.Length)
+        {
+            throw new ArgumentException("Order list has different length than table columns");
+        }
+
+        var result = new StringBuilder();
+        for (var oldCol = 0; oldCol < table.GetLength(1); oldCol++)
+        {
+            var newCol = order[oldCol];
+
+            for (var row = 0; row < table.GetLength(0); row++)
+            {
+                if (table[row, newCol] != Placeholder)
+                {
+                    result.Append(table[row, newCol]);
+                }
+            }
+        }
+        return result.ToString();
     }
 }
