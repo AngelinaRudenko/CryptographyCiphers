@@ -1,7 +1,7 @@
 ## Brute force for
 
 Brute force for algorithms:
-- [] complete table
+- [x] complete table
 - [] complete table with a password
 - [] double table
 - [x] plain shift

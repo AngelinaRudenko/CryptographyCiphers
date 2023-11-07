@@ -18,38 +18,27 @@ public static class CompleteTableWithoutPassword
 
         text = text.ToLowerInvariant();
 
-        var result = new List<(string key, string text)>();
-
         foreach (var tableSize in GetTableSizes(text))
         {
             var table = WriteToTableByColumn(tableSize.colsCount, tableSize.rowsCount, text);
             var rotatedText = ReadTableByRow(table);
-            result.Add(new ($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText));
+            yield return new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText);
         }
-
-        return result;
     }
 
     public static IEnumerable<(int colsCount, int rowsCount)> GetTableSizes(string text)
     {
-        // do not count columnsCount = 0 and columnsCount = text length
+        // do not count columnsCount = { 0, 1 text_length }
         for (var colsCount = 2; colsCount < text.Length; colsCount++)
         {
-            // do not count rowsCount = 0 and rowsCount = text length
-            for (var rowsCount = 2; rowsCount < text.Length; rowsCount++)
+            // start with rows, where cells >= text length
+            var startWithRowsCount = Math.Ceiling((double)text.Length / colsCount);
+            // column(s) is(are) empty, table is too big for word
+            var finishWhenRowsCount = Math.Ceiling((double)text.Length / (colsCount - 1));
+
+            for (var rowsCount = Convert.ToInt32(startWithRowsCount); rowsCount < finishWhenRowsCount; rowsCount++)
             {
-                var cellsCount = colsCount * rowsCount;
-                if (cellsCount - text.Length >= rowsCount) // column(s) is(are) empty, table is too big for word
-                {
-                    continue;
-                }
-
-                if (cellsCount < text.Length) // table is smaller than text
-                {
-                    continue;
-                }
-
-                yield return new(colsCount, rowsCount);
+                yield return new ValueTuple<int, int>(colsCount, rowsCount);
             }
         }
     }
