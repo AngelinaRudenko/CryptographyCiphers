@@ -15,10 +15,10 @@ public static class CompleteTableWithoutPassword
 
         text = text.ToLowerInvariant();
 
-        foreach (var tableSize in BaseTranspositionCipher.GetTableSizes(text))
+        foreach (var tableSize in TranspositionBase.GetTableSizes(text))
         {
-            var table = BaseTranspositionCipher.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
-            var rotatedText = BaseTranspositionCipher.ReadTableByCols(table);
+            var table = TranspositionBase.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+            var rotatedText = TranspositionBase.ReadTableByCols(table);
             yield return new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText);
         }
     }

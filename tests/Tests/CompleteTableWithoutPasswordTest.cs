@@ -8,7 +8,7 @@ public class CompleteTableWithoutPasswordTest
     public void GetTableSizes()
     {
         const string text = "HESLO";
-        var result = BaseTranspositionCipher.GetTableSizes(text).ToArray();
+        var result = TranspositionBase.GetTableSizes(text).ToArray();
 
         Assert.Equal(3, result.Length);
         Assert.Contains(result, x => x.colsCount == 4 && x.rowsCount == 2);
@@ -22,7 +22,7 @@ public class CompleteTableWithoutPasswordTest
         const int cols = 3;
         const int rows = 2;
         const string text = "HESLO";
-        var result = BaseTranspositionCipher.WriteToTableByRows(cols, rows, text);
+        var result = TranspositionBase.WriteToTableByRows(cols, rows, text);
 
         Assert.Equal('H', result[0,0]);
         Assert.Equal('E', result[0,1]);
@@ -38,8 +38,8 @@ public class CompleteTableWithoutPasswordTest
     [InlineData(3, 2, "HESLO", "HSOEL")]
     public void ReadTableByRow(int rows, int cols, string text, string expected)
     {
-        var table = BaseTranspositionCipher.WriteToTableByRows(cols, rows, text);
-        var result = BaseTranspositionCipher.ReadTableByCols(table);
+        var table = TranspositionBase.WriteToTableByRows(cols, rows, text);
+        var result = TranspositionBase.ReadTableByCols(table);
 
         Assert.Equal(expected, result);
     }

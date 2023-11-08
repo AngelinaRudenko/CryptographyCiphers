@@ -3,7 +3,7 @@
 Brute force for algorithms:
 - [x] complete table
 - [] complete table with a password
-- [] double table
+- [x] double table
 - [x] plain shift
 - [] affine cipher
 - [] substitution with a key

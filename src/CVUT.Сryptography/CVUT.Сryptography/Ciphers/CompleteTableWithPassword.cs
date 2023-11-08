@@ -13,7 +13,7 @@ public static class CompleteTableWithPassword
 
         text = text.ToLowerInvariant();
 
-        var tableSizes = BaseTranspositionCipher.GetTableSizes(text).ToArray();
+        var tableSizes = TranspositionBase.GetTableSizes(text).ToArray();
         var permutationsByElementsCount = new Dictionary<int, Permutations<int>>(); // key = elements count, value = permutations
         foreach (var colsCount in tableSizes.Select(x => x.colsCount).Distinct())
         {
@@ -25,13 +25,13 @@ public static class CompleteTableWithPassword
 
         foreach (var tableSize in tableSizes)
         {
-            var table = BaseTranspositionCipher.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+            var table = TranspositionBase.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
 
             Parallel.ForEach(permutationsByElementsCount[tableSize.colsCount], new ParallelOptions { MaxDegreeOfParallelism = 4 },
                 prm =>
                 {
                     var permutation = prm.ToArray();
-                    var rotatedText = BaseTranspositionCipher.ReadTableByCols(table, permutation);
+                    var rotatedText = TranspositionBase.ReadTableByCols(table, permutation);
                     // TODO: can i predict key?
                     result.Add(new ValueTuple<string, string>(
                         $"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}, permutation = '{string.Join(",", permutation)}'",
@@ -44,7 +44,7 @@ public static class CompleteTableWithPassword
             //foreach (var permutationByElementsCount in permutationsByElementsCount[tableSize.colsCount])
             //{
             //    var permutation = permutationByElementsCount.ToArray();
-            //    var rotatedText = BaseTranspositionCipher.ReadTableByCols(table, permutation);
+            //    var rotatedText = TranspositionBase.ReadTableByCols(table, permutation);
             //    // TODO: can i predict key?
             //    yield return new ValueTuple<string, string>(
             //        $"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}, permutation = '{string.Join(",", permutation)}'",
