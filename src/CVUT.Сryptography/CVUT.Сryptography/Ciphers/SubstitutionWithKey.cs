@@ -17,7 +17,8 @@ public class SubstitutionWithKey
         var encodedAlphabets = new Permutations<int>(
             Alphabet.LetterToNumber.Select(x => x.Value).ToArray(),
             GenerateOption.WithoutRepetition)
-            .Select(x => x.ToArray());
+            .Select(x => x.ToArray())
+            .ToList();
 
         foreach (var encodedAlphabet in encodedAlphabets)
         {
@@ -31,7 +32,7 @@ public class SubstitutionWithKey
                 decodedText.Append(Alphabet.NumberToLetter[decodedLetterIndex]);
             }
 
-            yield return new ValueTuple<string, string>($"Password = {GetPassword(encodedAlphabet)}", decodedText.ToString());
+            yield return new ValueTuple<string, string>($"Alphabet (find key by yourself) = {Alphabet.LettersIndexesToWord(encodedAlphabet)}", decodedText.ToString());
         }
     }
 
@@ -47,29 +48,5 @@ public class SubstitutionWithKey
         }
 
         return decodedAlphabet;
-    }
-
-    // ReSharper disable once SuggestBaseTypeForParameter
-    private static string GetPassword(int[] encodedAlphabet)
-    {
-        var passwordEndedIndex = encodedAlphabet.Length;
-
-        for (var i = encodedAlphabet.Length; i <= 0; i--)
-        {
-            if (encodedAlphabet[i] == i)
-            {
-                continue;
-            }
-            passwordEndedIndex = i;
-            break;
-        }
-
-        var password = new int[passwordEndedIndex];
-        for (var i = 0; i < password.Length; i++)
-        {
-            password[i] = encodedAlphabet[i];
-        }
-
-        return Alphabet.LettersIndexesToWord(password);
     }
 }
