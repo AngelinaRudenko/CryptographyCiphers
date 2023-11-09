@@ -3,10 +3,9 @@
 /// <summary>
 /// Complete table without password, columnar transposition
 /// </summary>
-public static class CompleteTableWithoutPassword
+public class CompleteTableWithoutPassword : IBruteForce
 {
-
-    public static IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
+    public IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -15,10 +14,10 @@ public static class CompleteTableWithoutPassword
 
         text = text.ToLowerInvariant();
 
-        foreach (var tableSize in TranspositionBase.GetTableSizes(text))
+        foreach (var tableSize in BaseTransposition.GetTableSizes(text))
         {
-            var table = TranspositionBase.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
-            var rotatedText = TranspositionBase.ReadTableByCols(table);
+            var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+            var rotatedText = BaseTransposition.ReadTableByCols(table);
             yield return new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText);
         }
     }

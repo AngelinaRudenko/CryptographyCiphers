@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace CVUT.Сryptography;
 
-internal class Alphabet
+[SuppressMessage("ReSharper", "MergeIntoPattern")]
+public static class Alphabet
 {
     static Alphabet()
     {
@@ -20,7 +22,7 @@ internal class Alphabet
     internal static char[] NumberToLetter { get; }
     internal static Dictionary<char, int> LetterToNumber { get; }
 
-    internal static string LettersIndexesToWord(int[] indexes)
+    public static string LettersIndexesToWord(int[] indexes)
     {
         if (indexes.Any(x => x < 0) || indexes.Any(x => x >= Length))
         {
@@ -35,5 +37,25 @@ internal class Alphabet
         }
 
         return result.ToString();
+    }
+
+    public static double GetIndexOfCoincidence(string text)
+    {
+        var indexOfCoincidence = 0.0;
+        var denominator = text.Length * (text.Length - 1);
+
+        for (var i = 0; i < Length; i++)
+        {
+            double letterFrequencyInText = text.Count(x => x.Equals(NumberToLetter[i]));
+            indexOfCoincidence += (letterFrequencyInText * (letterFrequencyInText - 1)) / denominator;
+        }
+
+        return indexOfCoincidence;
+    }
+
+    public static bool MayBeMonoAlphabeticSubstitution(string text)
+    {
+        var indexOfCoincidence = GetIndexOfCoincidence(text);
+        return indexOfCoincidence > 0.05 && indexOfCoincidence < 0.08; // IC ~ 0,067 - probably mono alphabetic
     }
 }

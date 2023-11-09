@@ -2,7 +2,7 @@
 
 namespace CVUT.Сryptography.Ciphers;
 
-public abstract class TranspositionBase
+public abstract class BaseTransposition
 {
     private const char Placeholder = '#';
 

@@ -2,9 +2,10 @@
 
 namespace CVUT.Сryptography.Ciphers;
 
-public static class CompleteTableWithPassword
+// TODO: do not use, inefficient
+public class CompleteTableWithPassword : IBruteForce
 {
-    public static IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
+    public IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -13,7 +14,7 @@ public static class CompleteTableWithPassword
 
         text = text.ToLowerInvariant();
 
-        var tableSizes = TranspositionBase.GetTableSizes(text).ToArray();
+        var tableSizes = BaseTransposition.GetTableSizes(text).ToArray();
         var permutationsByElementsCount = new Dictionary<int, Permutations<int>>(); // key = elements count, value = permutations
         foreach (var colsCount in tableSizes.Select(x => x.colsCount).Distinct())
         {
@@ -25,13 +26,13 @@ public static class CompleteTableWithPassword
 
         foreach (var tableSize in tableSizes)
         {
-            var table = TranspositionBase.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+            var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
 
             Parallel.ForEach(permutationsByElementsCount[tableSize.colsCount], new ParallelOptions { MaxDegreeOfParallelism = 4 },
                 prm =>
                 {
                     var permutation = prm.ToArray();
-                    var rotatedText = TranspositionBase.ReadTableByCols(table, permutation);
+                    var rotatedText = BaseTransposition.ReadTableByCols(table, permutation);
                     // TODO: can i predict key?
                     result.Add(new ValueTuple<string, string>(
                         $"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}, permutation = '{string.Join(",", permutation)}'",
@@ -44,7 +45,7 @@ public static class CompleteTableWithPassword
             //foreach (var permutationByElementsCount in permutationsByElementsCount[tableSize.colsCount])
             //{
             //    var permutation = permutationByElementsCount.ToArray();
-            //    var rotatedText = TranspositionBase.ReadTableByCols(table, permutation);
+            //    var rotatedText = BaseTransposition.ReadTableByCols(table, permutation);
             //    // TODO: can i predict key?
             //    yield return new ValueTuple<string, string>(
             //        $"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}, permutation = '{string.Join(",", permutation)}'",

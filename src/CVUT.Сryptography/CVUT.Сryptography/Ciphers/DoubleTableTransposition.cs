@@ -1,8 +1,8 @@
 ﻿namespace CVUT.Сryptography.Ciphers;
 
-public class DoubleTableTransposition
+public class DoubleTableTransposition : IBruteForce
 {
-    public static IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
+    public IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -11,17 +11,17 @@ public class DoubleTableTransposition
 
         text = text.ToLowerInvariant();
 
-        var tableSizes = TranspositionBase.GetTableSizes(text).ToArray();
+        var tableSizes = BaseTransposition.GetTableSizes(text).ToArray();
 
         foreach (var firstTableSize in tableSizes)
         {
-            var firstTable = TranspositionBase.WriteToTableByRows(firstTableSize.colsCount, firstTableSize.rowsCount, text);
-            var firstRotatedText = TranspositionBase.ReadTableByCols(firstTable);
+            var firstTable = BaseTransposition.WriteToTableByRows(firstTableSize.colsCount, firstTableSize.rowsCount, text);
+            var firstRotatedText = BaseTransposition.ReadTableByCols(firstTable);
 
             foreach (var secondTableSize in tableSizes)
             {
-                var secondTable = TranspositionBase.WriteToTableByRows(secondTableSize.colsCount, secondTableSize.rowsCount, firstRotatedText);
-                var secondRotatedText = TranspositionBase.ReadTableByCols(secondTable);
+                var secondTable = BaseTransposition.WriteToTableByRows(secondTableSize.colsCount, secondTableSize.rowsCount, firstRotatedText);
+                var secondRotatedText = BaseTransposition.ReadTableByCols(secondTable);
 
                 if (text.Equals(secondRotatedText))
                 {

@@ -6,9 +6,9 @@ namespace CVUT.Сryptography.Ciphers;
 /// <summary>
 /// ShiftCipher with key = 3 is Caesar cipher
 /// </summary>
-public static class ShiftCipher
+public class ShiftCipher : IBruteForce
 {
-    public static string Encrypt(string text, int key)
+    public string Encrypt(string text, int key)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -68,7 +68,7 @@ public static class ShiftCipher
         return result.ToString();
     }
 
-    public static IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
+    public IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
@@ -76,8 +76,6 @@ public static class ShiftCipher
         }
 
         text = text.ToLowerInvariant();
-
-        var result = new List<(int key, string text)>();
 
         // let's assume that user is not silly and skip key = 0
         for (var key = 1; key < Alphabet.NumberToLetter.Length + 1; key++)

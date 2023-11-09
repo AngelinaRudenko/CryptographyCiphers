@@ -1,15 +1,24 @@
 ﻿using CVUT.Сryptography.Ciphers;
+using Xunit;
 
 namespace Tests;
 
 public class CompleteTableWithPasswordTest
 {
-    //[Fact]
-    //public void BruteForceDecrypt()
-    //{
-    //    const string text = "SIDBMKGYMNSUEAGOLE";
-    //    var result = CompleteTableWithPassword.BruteForceDecrypt(text).ToArray();
+    private readonly CompleteTableWithPassword _completeTableWithPassword;
 
-    //    Assert.Contains(result, x => x.text.Equals("BUYSOMEMILKANDEGGS", StringComparison.InvariantCultureIgnoreCase));
-    //}
+
+    public CompleteTableWithPasswordTest()
+    {
+        _completeTableWithPassword = new CompleteTableWithPassword();
+    }
+
+    [Fact]
+    public void BruteForceDecrypt()
+    {
+        const string text = "SIDBMKGYMNSUEAGOLE";
+        var result = _completeTableWithPassword.BruteForceDecrypt(text).ToArray();
+
+        Assert.Contains(result, x => x.text.Equals("BUYSOMEMILKANDEGGS", StringComparison.InvariantCultureIgnoreCase));
+    }
 }

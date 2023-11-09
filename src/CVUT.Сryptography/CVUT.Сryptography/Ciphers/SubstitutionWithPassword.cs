@@ -3,9 +3,10 @@ using Combinatorics.Collections;
 
 namespace CVUT.Сryptography.Ciphers;
 
-public class SubstitutionWithKey
+// TODO: do not use, inefficient
+public class SubstitutionWithPassword : IBruteForce
 {
-    public static IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
+    public IEnumerable<(string key, string text)> BruteForceDecrypt(string text)
     {
         if (string.IsNullOrEmpty(text))
         {
