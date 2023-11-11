@@ -2,11 +2,11 @@
 
 Brute force for algorithms:
 - [x] complete table
-- [] complete table with a password
+- [x] complete table with a password (inefficient)
 - [x] double table
 - [x] plain shift
 - [] affine cipher
-- [] substitution with a key
+- [x] substitution with a key (inefficient)
 - [] Vigenère cipher
 - [] combinations of the previous methods (by combination, it means using exactly one substitution and one transposition technique).
 
