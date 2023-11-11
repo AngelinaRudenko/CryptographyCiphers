@@ -1,4 +1,6 @@
-﻿namespace CVUT.Сryptography.Ciphers;
+﻿using System.Collections.Concurrent;
+
+namespace CVUT.Сryptography.Ciphers;
 
 public class DoubleTableTransposition : IBruteForce
 {
@@ -13,26 +15,47 @@ public class DoubleTableTransposition : IBruteForce
 
         var tableSizes = BaseTransposition.GetTableSizes(text).ToArray();
 
+        var result = new ConcurrentBag<(string key, string text)>();
+
         foreach (var firstTableSize in tableSizes)
         {
             var firstTable = BaseTransposition.WriteToTableByRows(firstTableSize.colsCount, firstTableSize.rowsCount, text);
             var firstRotatedText = BaseTransposition.ReadTableByCols(firstTable);
 
-            foreach (var secondTableSize in tableSizes)
+            Parallel.ForEach(tableSizes, new ParallelOptions { MaxDegreeOfParallelism = 5 }, (secondTableSize) =>
             {
-                var secondTable = BaseTransposition.WriteToTableByRows(secondTableSize.colsCount, secondTableSize.rowsCount, firstRotatedText);
+                var secondTable = BaseTransposition.WriteToTableByRows(secondTableSize.colsCount,
+                    secondTableSize.rowsCount, firstRotatedText);
                 var secondRotatedText = BaseTransposition.ReadTableByCols(secondTable);
 
                 if (text.Equals(secondRotatedText))
                 {
-                    yield break;
+                    return;
                 }
 
-                yield return new ValueTuple<string, string>(
+                result.Add(new ValueTuple<string, string>(
                     $"First table columns = {firstTableSize.colsCount}, rows = {firstTableSize.rowsCount}, " +
                     $"second table columns = {secondTableSize.colsCount}, rows = {secondTableSize.rowsCount}",
-                    secondRotatedText);
-            }
+                    secondRotatedText));
+            });
+
+            //foreach (var secondTableSize in tableSizes)
+            //{
+            //    var secondTable = BaseTransposition.WriteToTableByRows(secondTableSize.colsCount, secondTableSize.rowsCount, firstRotatedText);
+            //    var secondRotatedText = BaseTransposition.ReadTableByCols(secondTable);
+
+            //    if (text.Equals(secondRotatedText))
+            //    {
+            //        yield break;
+            //    }
+
+            //    yield return new ValueTuple<string, string>(
+            //        $"First table columns = {firstTableSize.colsCount}, rows = {firstTableSize.rowsCount}, " +
+            //        $"second table columns = {secondTableSize.colsCount}, rows = {secondTableSize.rowsCount}",
+            //        secondRotatedText);
+            //}
         }
+
+        return result;
     }
 }

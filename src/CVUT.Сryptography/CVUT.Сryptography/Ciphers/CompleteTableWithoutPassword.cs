@@ -1,4 +1,6 @@
-﻿namespace CVUT.Сryptography.Ciphers;
+﻿using System.Collections.Concurrent;
+
+namespace CVUT.Сryptography.Ciphers;
 
 /// <summary>
 /// Complete table without password, columnar transposition
@@ -14,11 +16,23 @@ public class CompleteTableWithoutPassword : IBruteForce
 
         text = text.ToLowerInvariant();
 
-        foreach (var tableSize in BaseTransposition.GetTableSizes(text))
-        {
-            var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
-            var rotatedText = BaseTransposition.ReadTableByCols(table);
-            yield return new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText);
-        }
+        var result = new ConcurrentBag<(string key, string text)>();
+
+        Parallel.ForEach(BaseTransposition.GetTableSizes(text), new ParallelOptions { MaxDegreeOfParallelism = 5 },
+            (tableSize) =>
+            {
+                var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+                var rotatedText = BaseTransposition.ReadTableByCols(table);
+                result.Add(new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText));
+            });
+
+        return result;
+
+        //foreach (var tableSize in BaseTransposition.GetTableSizes(text))
+        //{
+        //    var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
+        //    var rotatedText = BaseTransposition.ReadTableByCols(table);
+        //    yield return new ValueTuple<string, string>($"Table columns = {tableSize.colsCount}, rows = {tableSize.rowsCount}", rotatedText);
+        //}
     }
 }

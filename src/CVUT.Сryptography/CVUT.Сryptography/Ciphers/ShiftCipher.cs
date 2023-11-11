@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 namespace CVUT.Сryptography.Ciphers;
@@ -77,10 +78,19 @@ public class ShiftCipher : IBruteForce
 
         text = text.ToLowerInvariant();
 
-        // let's assume that user is not silly and skip key = 0
-        for (var key = 1; key < Alphabet.NumberToLetter.Length + 1; key++)
+        var result = new ConcurrentBag<(string key, string text)>();
+
+        Parallel.For(1, Alphabet.NumberToLetter.Length, (key) =>
         {
-            yield return ($"Move = {key}", Decrypt(text, key));
-        }
+            result.Add(new ValueTuple<string, string>($"Move = {key}", Decrypt(text, key)));
+        });
+
+        return result;
+
+        // let's assume that user is not silly and skip key = 0 and key = 26
+        //for (var key = 1; key < Alphabet.NumberToLetter.Length; key++)
+        //{
+        //    yield return ($"Move = {key}", Decrypt(text, key));
+        //}
     }
 }

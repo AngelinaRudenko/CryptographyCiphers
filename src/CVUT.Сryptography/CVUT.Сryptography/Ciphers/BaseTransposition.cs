@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace CVUT.Сryptography.Ciphers;
 
@@ -8,8 +9,9 @@ public abstract class BaseTransposition
 
     public static IEnumerable<(int rowsCount, int colsCount)> GetTableSizes(string text)
     {
-        // do not count columnsCount = { 0, 1 text_length }
-        for (var rowsCount = 2; rowsCount < text.Length; rowsCount++)
+        var result = new ConcurrentBag<(int rowsCount, int colsCount)>();
+
+        Parallel.For(2, text.Length, new ParallelOptions { MaxDegreeOfParallelism = 5 }, (rowsCount) =>
         {
             // start with cols, where cells >= text length
             var startWithColsCount = Math.Ceiling((double)text.Length / rowsCount);
@@ -18,9 +20,26 @@ public abstract class BaseTransposition
 
             for (var colsCount = Convert.ToInt32(startWithColsCount); colsCount < finishWhenColsCount; colsCount++)
             {
-                yield return new ValueTuple<int, int>(rowsCount, colsCount);
+                result.Add(new ValueTuple<int, int>(rowsCount, colsCount));
             }
-        }
+        });
+
+        return result;
+
+
+        // do not count columnsCount = { 0, 1 text_length }
+        //for (var rowsCount = 2; rowsCount < text.Length; rowsCount++)
+        //{
+        //    // start with cols, where cells >= text length
+        //    var startWithColsCount = Math.Ceiling((double)text.Length / rowsCount);
+        //    // row(s) is(are) empty, table is too big for word
+        //    var finishWhenColsCount = Math.Ceiling((double)text.Length / (rowsCount - 1));
+
+        //    for (var colsCount = Convert.ToInt32(startWithColsCount); colsCount < finishWhenColsCount; colsCount++)
+        //    {
+        //        yield return new ValueTuple<int, int>(rowsCount, colsCount);
+        //    }
+        //}
     }
 
     public static char[,] WriteToTableByRows(int colsCount, int rowsCount, string text)

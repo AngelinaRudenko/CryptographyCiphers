@@ -32,6 +32,7 @@ if (!symSpell.LoadDictionary(frequencyDictionaryPath, 0, 1))
 var ciphers = new IBruteForce[]
 {
     new ShiftCipher(),
+    new AffineCipher(),
     //new SubstitutionWithPassword(),
     new CompleteTableWithoutPassword(),
     //new CompleteTableWithPassword(),
@@ -49,6 +50,11 @@ foreach (var cipher1 in ciphers)
 {
     foreach (var cipher2 in ciphers)
     {
+        if (cipher1.GetType() == typeof(ShiftCipher) && cipher2.GetType() == typeof(ShiftCipher))
+        {
+            continue;
+        }
+
         ciphersCombinations.Add(new List<IBruteForce> { cipher1, cipher2 });
     }
 }
@@ -56,6 +62,9 @@ foreach (var cipher1 in ciphers)
 #endregion
 
 var output = new StringBuilder();
+var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\output.txt");
+await File.WriteAllTextAsync(outputPath, string.Empty); // clear the file
+
 foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOrEmpty(x)))
 {
     var taskNumber = "";
@@ -79,6 +88,23 @@ foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOr
 
     var text = rawTask.Substring(textStartsAtIndex).Trim().ToLowerInvariant();
 
+    var skipTask = false;
+    for (var i = 0; i < text.Length; i++)
+    {
+        var chr = text[i];
+        if (!Alphabet.LetterToNumber.ContainsKey(chr))
+        {
+            Console.WriteLine($"Character '{chr}' is not presented in the dictionary. Character id int text = '{i}'.");
+            skipTask = true;
+            break;
+        }
+    }
+
+    if (skipTask)
+    {
+        continue;
+    }
+
     var mayBeMonoAlphabeticSubstitution = Alphabet.MayBeMonoAlphabeticSubstitution(text);
     var ic = Alphabet.GetIndexOfCoincidence(text);
 
@@ -95,6 +121,8 @@ foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOr
         var readTextsFrom = new List<(string key, string text)>() { new ("Plain text", text) };
         var bruteForceResults = new List<(string key, string text)>();
 
+        Console.WriteLine($"\t{DateTime.Now:HH:mm:ss} Start ciphers combination {string.Join("->", combination.Select(cipher => cipher.GetType().Name))}");
+
         foreach (var cipher in combination)
         {
             foreach (var tempText in readTextsFrom)
@@ -109,14 +137,20 @@ foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOr
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            //GC.Collect();
-            //GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
-        var answers = new List<CipherAnswer>();
+        Console.WriteLine($"\t{DateTime.Now:HH:mm:ss} Finished ciphers combination {string.Join("->", combination.Select(cipher => cipher.GetType().Name))}");
+
         foreach (var bruteForceResult in bruteForceResults)
         {
             var suggestion = symSpell.WordSegmentation(bruteForceResult.text);
+
+            if (result.GetMinProbability() > suggestion.probabilityLogSum)
+            {
+                continue;
+            }
 
             var cipherAnswer = new CipherAnswer
             {
@@ -127,19 +161,19 @@ foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOr
                 DistanceSum = suggestion.distanceSum
             };
 
-            answers.Add(cipherAnswer);
+            result.AddIfHigherProbability(cipherAnswer);
         }
 
-        foreach (var item in answers.OrderByDescending(x => x.ProbabilityLogSum).Take(5))
-        {
-            result.AddIfHigherProbability(item);
-        }
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
 
     stopWatch.Stop();
     var elapsedTime = stopWatch.Elapsed;
-    Console.WriteLine($"{DateTime.Now:HH:mm:ss} Finished brute force for Task {taskNumber}. Elapse time {elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}");
+    Console.WriteLine($"{DateTime.Now:HH:mm:ss} Finished brute force for Task {taskNumber}. Elapse time {elapsedTime.Hours:00}:{elapsedTime.Minutes:00}:{elapsedTime.Seconds:00}\n");
 
     foreach (var answer in result.Answers)
     {
@@ -147,9 +181,7 @@ foreach (var rawTask in tasksAsString.Split("Task ").Where(x => !string.IsNullOr
     }
 
     output.AppendLine("\n\n");
+    await File.AppendAllTextAsync(outputPath, output.ToString());
 }
-
-var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "Files\\output.txt");
-await File.WriteAllTextAsync(outputPath, output.ToString());
 
 Console.WriteLine("Done");

@@ -30,4 +30,9 @@ public class AnswersList
             _answers[minIndex] = answer;
         }
     }
+
+    public decimal GetMinProbability()
+    {
+        return _answers.MinBy(x => x?.ProbabilityLogSum)?.ProbabilityLogSum ?? decimal.MinValue;
+    }
 }

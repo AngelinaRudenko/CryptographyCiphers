@@ -28,7 +28,7 @@ public class CompleteTableWithPassword : IBruteForce
         {
             var table = BaseTransposition.WriteToTableByRows(tableSize.colsCount, tableSize.rowsCount, text);
 
-            Parallel.ForEach(permutationsByElementsCount[tableSize.colsCount], new ParallelOptions { MaxDegreeOfParallelism = 4 },
+            Parallel.ForEach(permutationsByElementsCount[tableSize.colsCount], new ParallelOptions { MaxDegreeOfParallelism = 5 },
                 prm =>
                 {
                     var permutation = prm.ToArray();

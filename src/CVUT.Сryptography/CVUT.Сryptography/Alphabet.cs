@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace CVUT.Сryptography;
@@ -11,16 +12,16 @@ public static class Alphabet
         NumberToLetter = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
         Length = NumberToLetter.Length;
 
-        LetterToNumber = new Dictionary<char, int>();
+        LetterToNumber = new ConcurrentDictionary<char, int>();
         for (var i = 0; i < NumberToLetter.Length; i++)
         {
-            LetterToNumber.Add(NumberToLetter[i], i);
+            LetterToNumber.TryAdd(NumberToLetter[i], i);
         }
     }
 
     internal static int Length { get; }
     internal static char[] NumberToLetter { get; }
-    internal static Dictionary<char, int> LetterToNumber { get; }
+    internal static ConcurrentDictionary<char, int> LetterToNumber { get; }
 
     public static string LettersIndexesToWord(int[] indexes)
     {
